@@ -1,0 +1,1026 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Data Ninja - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #FAFAFA;
+    color: #212121;
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: black; /* Change sidebar background to black */
+    color: white; /* Keep text color white for contrast */
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+  }
+  .logo img {
+    margin-right: 10px;
+  }
+  .menu-section {
+    margin-bottom: 30px;
+  }
+  .menu-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: #B3B3B3; /* Secondary Text */
+  }
+  .menu-items {
+    list-style-type: none;
+    padding: 0;
+  }
+  .menu-items li {
+    margin-bottom: 10px;
+  }
+  .menu-items a {
+    color: white !important; /* Ensure menu item text is white */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  .menu-section.getting-started .menu-items a {
+    background-color: #FFC107; /* Highlight color */
+    color: #212121 !important; /* Text color contrasting the background */
+    font-weight: 600;
+  }
+  .menu-section.getting-started .menu-items a:hover {
+    background-color: #FFA000; /* Darker highlight on hover */
+  }
+  .menu-section.getting-started i {
+    color: #212121; /* Icon color contrasting the background */
+  }
+  .menu-items a:hover {
+    background-color: #303F9F; /* Change hover color if needed */
+  }
+  .menu-items i {
+    margin-right: 10px;
+    font-family: 'Material Icons';
+    color: white; /* Ensure icon color is white */
+  }
+  .container {
+    display: block;
+    margin-left: 270px;
+    padding: 20px;
+  }
+  .main-content {
+    padding: 30px 20px;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #3F51B5;
+  }
+  .banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3F51B5; /* Primary Color */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .banner a {
+    color: #FFC107; /* Highlight Color */
+    text-decoration: underline;
+  }
+  .banner button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .tabs {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  .tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #E0E0E0;
+    border: none;
+    outline: none;
+    transition: background-color 0.3s;
+    font-weight: 500;
+  }
+  .tab-button.active {
+    background-color: #3F51B5;
+    color: white;
+  }
+  .tab-button:not(:last-child) {
+    margin-right: 5px;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  .crm-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .crm-table th, .crm-table td {
+    padding: 12px 15px;
+    border: 1px solid #E0E0E0;
+    text-align: left;
+  }
+  .crm-table th {
+    background-color: #f5f5f5;
+    color: #3F51B5;
+  }
+  .crm-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  .metrics-row {
+    display: flex;
+    flex-wrap: nowrap; /* Prevents the cards from wrapping to the next line */
+    gap: 10px; /* Reduced from 20px to decrease space between cards */
+    margin-bottom: 20px;
+  }
+  .metric-card {
+    background-color: white;
+    padding: 15px; /* Reduced from 20px to make the cards smaller */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Allows all cards to have equal width */
+    min-width: 200px; /* Reduced from 250px to make cards narrower */
+    text-align: center;
+  }
+  .metric-card h3 {
+    margin-bottom: 8px; /* Adjusted for smaller padding */
+    color: #3F51B5;
+    font-size: 20px; /* Reduced from default for better fit */
+  }
+  .metric-card p {
+    font-size: 20px; /* Reduced from 24px to maintain balance */
+    font-weight: 700;
+    color: #212121;
+  }
+  .charts-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns layout */
+    gap: 15px; /* Set gap between charts */
+    margin-bottom: 20px; /* Space below the charts */
+  }
+  .chart-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 0; /* Prevents flex items from exceeding their flex-basis */
+    text-align: center;
+  }
+  canvas {
+    max-width: 100%; /* Responsive canvas */
+    height: auto; /* Maintain aspect ratio */
+  }
+  @media (max-width: 1024px) {
+    .metrics-row {
+      gap: 8px; /* Further reduce gap on slightly smaller screens */
+    }
+    .metric-card {
+      min-width: 180px; /* Adjust min-width for medium screens */
+      padding: 12px; /* Further reduced padding */
+    }
+    .metric-card h3 {
+      font-size: 18px; /* Adjust font size for medium screens */
+    }
+    .metric-card p {
+      font-size: 18px; /* Adjust font size for medium screens */
+    }
+  }
+  @media (max-width: 768px) {
+    .metrics-row {
+      flex-wrap: wrap; /* Allows wrapping on smaller screens */
+      gap: 10px; /* Maintain smaller gap */
+    }
+    .metric-card {
+      min-width: 100%; /* Full width on small screens */
+      padding: 10px; /* Minimal padding */
+    }
+    .metric-card h3 {
+      font-size: 16px; /* Smaller font size */
+    }
+    .metric-card p {
+      font-size: 16px; /* Smaller font size */
+    }
+  }
+  .campaign-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .campaign-table th, .campaign-table td {
+    padding: 12px 15px;
+    border: 1px solid #E0E0E0;
+    text-align: left;
+  }
+  .campaign-table th {
+    background-color: #f5f5f5;
+    color: #3F51B5;
+  }
+  .campaign-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  .filter-container {
+    margin-bottom: 20px;
+  }
+  .filter-container label {
+    margin-right: 10px;
+  }
+  .full-width-chart {
+    width: 100%;
+    height: 300px; /* Set a height for the chart */
+  }
+  .user-settings-button {
+    width: 100%;
+    background-color: #FFC107; /* Secondary Color */
+    color: #212121;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-settings-button:hover {
+    background-color: #FFA000;
+  }
+  .user-settings-button::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+  }
+  .user-settings-button:active::after {
+    transform: scale(4);
+    opacity: 1;
+    transition: 0s;
+  }
+  .user-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #5C6BC0;
+  }
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .user-photo {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  .user-name {
+    font-size: 16px;
+    color: #FFFFFF;
+    font-weight: 500;
+  }
+  .user-settings-button {
+    width: 100%;
+    background-color: #FFC107; /* Secondary Color */
+    color: #212121;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-settings-button:hover {
+    background-color: #FFA000;
+  }
+  .user-settings-button::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+  }
+  .user-settings-button:active::after {
+    transform: scale(4);
+    opacity: 1;
+    transition: 0s;
+  }
+</style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/images/Dataninja.png" alt="My Data Ninja Logo" width="40" height="40">
+      <span>My Data Ninja</span>
+    </div>
+
+    <div class="menu-section getting-started">
+      <ul class="menu-items">
+        <li>
+          <a href="Getting Started.html">
+            <i class="material-icons">emoji_objects</i> Getting Started
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-title">KPIs</div>
+      <ul class="menu-items">
+        <li><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+        <li><a href="Acquisition.html" class="active"><i class="material-icons">show_chart</i> Acquisition</a></li>
+        <li><a href="Retention.html"><i class="material-icons">people</i> Retention</a></li>
+        <li><a href="#"><i class="material-icons">description</i> Reporting</a></li>
+      </ul>
+    </div>
+    <div class="menu-section">
+      <div class="menu-title">Setup</div>
+      <ul class="menu-items">
+        <li><a href="#"><i class="material-icons">campaign</i> Marketing Investment</a></li>
+        <li><a href="Data Ninja Ecommerce.html"><i class="material-icons">attach_money</i> Ecommerce</a></li>
+        <li><a href="#"><i class="material-icons">receipt</i> Costs</a></li>
+        <li><a href="#"><i class="material-icons">swap_horiz</i> Conversions</a></li>
+      </ul>
+    </div>
+    <div class="menu-section user-section">
+      <div class="user-info">
+        <img src="/images/Alfonso Foto 4040.jpg" alt="A professional headshot photo of a data analysis expert." class="user-photo" width="40" height="40" data-image_id="1">
+        <span class="user-name">Alfonso's Store</span>
+      </div>
+      <button class="user-settings-button">Settings</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="main-content">
+      <div class="header">
+        <h1>Acquisition</h1>
+        <div class="date-selector">
+          <label for="dateRange">Date Range:</label>
+          <select id="dateRange">
+            <option value="7">Last 7 Days</option>
+            <option value="14">Last 14 Days</option>
+            <option value="30">Last Month</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="customDatePicker" class="custom-date-picker">
+            <input type="date" id="startDate" aria-label="Start Date">
+            <span>to</span>
+            <input type="date" id="endDate" aria-label="End Date">
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="sales">Sales</button>
+        <button class="tab-button" data-tab="charts">Charts</button>
+      </div>
+
+      <div class="tab-content active" id="sales">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Sale Date</th>
+              <th>Order Value</th>
+              <th>Acquisition Channel</th>
+              <th>User</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Product A</td>
+              <td>2023-01-15</td>
+              <td>$85</td>
+              <td>Online</td>
+              <td>User 1</td>
+            </tr>
+            <tr>
+              <td>Product B</td>
+              <td>2023-02-20</td>
+              <td>$120</td>
+              <td>Social Media</td>
+              <td>User 2</td>
+            </tr>
+            <tr>
+              <td>Product C</td>
+              <td>2023-03-05</td>
+              <td>$95</td>
+              <td>Email</td>
+              <td>User 3</td>
+            </tr>
+            <tr>
+              <td>Product D</td>
+              <td>2023-04-10</td>
+              <td>$110</td>
+              <td>Online</td>
+              <td>User 4</td>
+            </tr>
+            <tr>
+              <td>Product E</td>
+              <td>2023-05-18</td>
+              <td>$130</td>
+              <td>Referral</td>
+              <td>User 5</td>
+            </tr>
+            <tr>
+              <td>Product F</td>
+              <td>2023-06-22</td>
+              <td>$105</td>
+              <td>Marketplaces</td>
+              <td>User 6</td>
+            </tr>
+            <tr>
+              <td>Product G</td>
+              <td>2023-07-30</td>
+              <td>$115</td>
+              <td>Social Media</td>
+              <td>User 7</td>
+            </tr>
+            <tr>
+              <td>Product H</td>
+              <td>2023-08-14</td>
+              <td>$90</td>
+              <td>Email</td>
+              <td>User 8</td>
+            </tr>
+            <tr>
+              <td>Product I</td>
+              <td>2023-09-03</td>
+              <td>$125</td>
+              <td>Online</td>
+              <td>User 9</td>
+            </tr>
+            <tr>
+              <td>Product J</td>
+              <td>2023-10-11</td>
+              <td>$100</td>
+              <td>Referral</td>
+              <td>User 10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-content" id="charts">
+        <div class="charts-container">
+          <div class="chart-card">
+            <h3>New Customers with an Order: <span id="newCustomersWithOrder">0</span></h3>
+            <canvas id="newCustomersChart" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Blended CAC: <span id="cac">0</span></h3>
+            <canvas id="cacChart" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>New Orders: <span id="newOrders">0</span></h3>
+            <canvas id="newOrdersChart" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Gross Sales</h3>
+            <canvas id="grossSalesChart" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Ad Spend</h3>
+            <canvas id="adSpendChart" width="400" height="200"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Blended ROAS</h3>
+            <canvas id="blendedROASChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+
+        <h2>Channel and Campaign Performance</h2>
+        
+        <div class="filter-container" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <label for="attributionSelect">Attribution Model:</label>
+            <select id="attributionSelect" aria-label="Select attribution model">
+              <option value="last_click">Last Click</option>
+              <option value="first_click">First Click</option>
+              <option value="linear">Linear</option>
+              <option value="time_decay">Time Decay</option>
+              <option value="position_based">Position Based</option>
+            </select>
+          </div>
+          <div>
+            <label for="channelCampaignSelect">View by:</label>
+            <select id="channelCampaignSelect" aria-label="Select view mode">
+              <option value="channel">Channel</option>
+              <option value="campaign">Campaign</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="full-width-chart" style="margin-top: 20px;">
+          <canvas id="adSpendOverTimeChart" class="full-width-chart"></canvas>
+        </div>
+
+        <table class="campaign-table" id="performanceTable">
+          <thead>
+            <tr>
+              <th>Channel/Campaign</th>
+              <th>Ad Spend</th>
+              <th>Ad Platform ROAS</th>
+              <th>DataNinja Pixel CAC</th>
+              <th>DataNinja Pixel Conversion Value</th>
+              <th>DataNinja ROAS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="channel-row">
+              <td><img src="https://via.placeholder.com/20" alt="Google Ads Logo" width="20" height="20"> Google Ads - Spring Sale</td>
+              <td>$500</td>
+              <td>120%</td>
+              <td>$50</td>
+              <td>$750</td>
+              <td class="roas">100%</td>
+            </tr>
+            <tr class="channel-row">
+              <td><img src="https://via.placeholder.com/20" alt="Facebook Logo" width="20" height="20"> Facebook - New Arrivals</td>
+              <td>$600</td>
+              <td>130%</td>
+              <td>$55</td>
+              <td>$780</td>
+              <td class="roas">110%</td>
+            </tr>
+            <tr class="channel-row">
+              <td><img src="https://via.placeholder.com/20" alt="Email Logo" width="20" height="20"> Email - Weekly Newsletter</td>
+              <td>$300</td>
+              <td>150%</td>
+              <td>$30</td>
+              <td>$540</td>
+              <td class="roas">120%</td>
+            </tr>
+            <tr class="campaign-row">
+              <td><img src="https://via.placeholder.com/20" alt="Google Ads Logo" width="20" height="20"> Google Ads - Spring Sale</td>
+              <td>$500</td>
+              <td>120%</td>
+              <td>$50</td>
+              <td>$750</td>
+              <td class="roas">100%</td>
+            </tr>
+            <tr class="campaign-row">
+              <td><img src="https://via.placeholder.com/20" alt="Facebook Logo" width="20" height="20"> Facebook - New Arrivals</td>
+              <td>$600</td>
+              <td>130%</td>
+              <td>$55</td>
+              <td>$780</td>
+              <td class="roas">110%</td>
+            </tr>
+            <tr class="campaign-row">
+              <td><img src="https://via.placeholder.com/20" alt="Email Logo" width="20" height="20"> Email - Weekly Newsletter</td>
+              <td>$300</td>
+              <td>150%</td>
+              <td>$30</td>
+              <td>$540</td>
+              <td class="roas">120%</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <h2>Channel Insights</h2>
+        <div class="full-width-chart">
+          <canvas id="channelInsightsChart" class="full-width-chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab Functionality
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tab = button.getAttribute('data-tab');
+
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(tab).classList.add('active');
+      });
+    });
+
+    // Function to update metrics based on date range
+    document.getElementById('dateRange').addEventListener('change', updateMetrics);
+
+    function updateMetrics() {
+      const dateRange = document.getElementById('dateRange').value;
+
+      // Placeholder logic for fetching and updating metrics
+      let newCustomers = 75; // Placeholder for New Customers
+      let cac = 23; // Placeholder for Customer Acquisition Cost
+      let newOrders = 150; // Placeholder for New Orders
+      let grossSales = 15.000; // Placeholder for Gross Sales
+      let adSpend = 2.450; // Placeholder for Ad Spend
+      let blendedROAS = 120; // Placeholder for Blended ROAS
+
+      // Example data for calculations
+      const exampleData = {
+        '7': { newCustomers: 30, cac: 160, newOrders: 45, grossSales: 7000, adSpend: 2500, blendedROAS: 150 },
+        '14': { newCustomers: 60, cac: 155, newOrders: 90, grossSales: 14000, adSpend: 5000, blendedROAS: 160 },
+        '30': { newCustomers: 120, cac: 152, newOrders: 200, grossSales: 30000, adSpend: 10000, blendedROAS: 170 },
+        'custom': { newCustomers: 250, cac: 150, newOrders: 320, grossSales: 50000, adSpend: 15000, blendedROAS: 180 }
+      };
+
+      if (exampleData[dateRange]) {
+        newCustomers = exampleData[dateRange].newCustomers;
+        cac = exampleData[dateRange].cac;
+        newOrders = exampleData[dateRange].newOrders;
+        grossSales = exampleData[dateRange].grossSales;
+        adSpend = exampleData[dateRange].adSpend;
+        blendedROAS = exampleData[dateRange].blendedROAS;
+      }
+
+      // Update metrics only if the elements exist
+      const newCustomersElement = document.getElementById('newCustomersWithOrder');
+      const cacElement = document.getElementById('cac');
+      const newOrdersElement = document.getElementById('newOrders');
+
+      if (newCustomersElement) {
+        newCustomersElement.textContent = newCustomers;
+      }
+      if (cacElement) {
+        cacElement.textContent = cac;
+      }
+      if (newOrdersElement) {
+        newOrdersElement.textContent = newOrders;
+      }
+
+      // Update charts with the new single data point
+      updateCharts(newCustomers, cac, newOrders, grossSales, adSpend, blendedROAS);
+    }
+
+    function updateCharts(newCustomers, cac, newOrders, grossSales, adSpend, blendedROAS) {
+      // Update New Customers Chart
+      new Chart(newCustomersCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Total'],
+          datasets: [{ label: 'New Customers', data: [newCustomers], backgroundColor: '#3F51B5' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Update Blended CAC Chart
+      new Chart(cacCtx, {
+        type: 'line',
+        data: {
+          labels: ['Total'],
+          datasets: [{ label: 'Blended CAC', data: [cac], borderColor: '#FF5722', fill: false }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Update New Orders Chart
+      new Chart(newOrdersCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Total'],
+          datasets: [{ label: 'New Orders', data: [newOrders], backgroundColor: '#009688' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Update Gross Sales Chart
+      new Chart(grossSalesCtx, {
+        type: 'line',
+        data: {
+          labels: ['Total'],
+          datasets: [{ label: 'Gross Sales', data: [grossSales], borderColor: '#FFC107', fill: false }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Update Ad Spend Chart
+      new Chart(adSpendCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Total'],
+          datasets: [{ label: 'Ad Spend', data: [adSpend], backgroundColor: '#FF9800' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Update Blended ROAS Chart
+      new Chart(blendedROASCtx, {
+        type: 'line',
+        data: {
+          labels: ['Total'],
+          datasets: [{ label: 'Blended ROAS', data: [blendedROAS], borderColor: '#9C27B0', fill: false }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    // Initialize charts with dummy data
+    function initializeCharts() {
+      const newCustomersCtx = document.getElementById('newCustomersChart').getContext('2d');
+      const cacCtx = document.getElementById('cacChart').getContext('2d');
+      const newOrdersCtx = document.getElementById('newOrdersChart').getContext('2d');
+      const grossSalesCtx = document.getElementById('grossSalesChart').getContext('2d');
+      const adSpendCtx = document.getElementById('adSpendChart').getContext('2d');
+      const blendedROASCtx = document.getElementById('blendedROASChart').getContext('2d');
+      const adSpendOverTimeCtx = document.getElementById('adSpendOverTimeChart').getContext('2d');
+      const channelInsightsCtx = document.getElementById('channelInsightsChart').getContext('2d');
+
+      // Dummy data for charts
+      const newCustomersData = [50, 70, 90, 110, 130, 150]; // Dummy data for New Customers
+      const cacData = [200, 180, 160, 140, 120, 100]; // Dummy data for CAC
+      const newOrdersData = [30, 50, 70, 90, 110, 130]; // Dummy data for New Orders
+      const grossSalesData = [5000, 7000, 6000, 8000, 9000, 10000]; // Dummy data for Gross Sales
+      const adSpendData = [2000, 2500, 2200, 1800, 3000, 3500]; // Dummy data for Ad Spend
+      const blendedROASData = [150, 120, 130, 140, 160, 170]; // Dummy data for Blended ROAS
+      const adSpendOverTimeData = [500, 600, 700, 800, 900, 1000]; // Dummy data for Ad Spend over time
+      const dataNinjaPixelConversionValueData = [750, 800, 850, 900, 950, 1000]; // Dummy data for DataNinja Pixel Conversion Value
+      const labels = ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'];
+
+      // New Customers Chart
+      new Chart(newCustomersCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'New Customers', data: newCustomersData, backgroundColor: '#3F51B5' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Blended CAC Chart
+      new Chart(cacCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'Blended CAC', data: cacData, borderColor: '#FF5722', fill: false }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // New Orders Chart
+      new Chart(newOrdersCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'New Orders', data: newOrdersData, backgroundColor: '#009688' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Gross Sales Chart
+      new Chart(grossSalesCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'Gross Sales', data: grossSalesData, borderColor: '#FFC107', fill: false }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Ad Spend Chart
+      new Chart(adSpendCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'Ad Spend', data: adSpendData, backgroundColor: '#FF9800' }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Blended ROAS Chart
+      new Chart(blendedROASCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{ label: 'Blended ROAS', data: blendedROASData, borderColor: '#9C27B0', fill: false }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Ad Spend Over Time Chart
+      new Chart(adSpendOverTimeCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Ad Spend',
+              data: adSpendOverTimeData,
+              borderColor: '#FF5722', // Line color
+              backgroundColor: 'rgba(255, 87, 34, 0.2)', // Fill color
+              borderWidth: 2,
+              pointBackgroundColor: '#FF5722', // Point color
+              pointBorderColor: '#fff', // Point border color
+              pointRadius: 5,
+              fill: true // Fill under the line
+            },
+            {
+              label: 'DataNinja Pixel Conversion Value',
+              data: dataNinjaPixelConversionValueData, // Updated to use DataNinja Pixel Conversion Value data
+              borderColor: '#3F51B5', // Line color for DataNinja Pixel Conversion Value
+              backgroundColor: 'rgba(63, 81, 181, 0.2)', // Fill color for DataNinja Pixel Conversion Value
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false, // Allow the chart to fill the container
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#E0E0E0' // Grid color
+              }
+            },
+            x: {
+              grid: {
+                color: '#E0E0E0' // Grid color
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                color: '#212121' // Legend text color
+              }
+            },
+            tooltip: {
+              backgroundColor: '#fff', // Tooltip background color
+              titleColor: '#212121', // Tooltip title color
+              bodyColor: '#212121' // Tooltip body color
+            }
+          }
+        }
+      });
+
+      // Channel Insights Chart
+      new Chart(channelInsightsCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Channel 1', 'Channel 2', 'Channel 3', 'Channel 4', 'Channel 5'],
+          datasets: [{
+            label: 'Channel Insights',
+            data: [12, 19, 3, 5, 2],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Call the function after the page loads to initialize charts
+    window.onload = () => {
+      initializeCharts(); // Existing chart initialization
+      colorROASCells(); // Newly added function for color coding ROAS
+    };
+
+    // Function to color the ROAS cells based on their values
+    function colorROASCells() {
+      const roasCells = document.querySelectorAll('.campaign-table .roas');
+      roasCells.forEach(cell => {
+        const roasValue = parseFloat(cell.textContent);
+        if (roasValue > 100) {
+          cell.style.color = 'green'; // Paint green
+        } else {
+          cell.style.color = 'red'; // Paint red
+        }
+      });
+
+      // Select the Ad Platform ROAS columns and apply the same coloring logic
+      const adPlatformROASCells = document.querySelectorAll('.campaign-table td:nth-child(3)'); // Adjust to correct column index
+      adPlatformROASCells.forEach(cell => {
+        const roasValue = parseFloat(cell.textContent); // Ensure it gets parsed properly
+        if (roasValue > 100) {
+          cell.style.color = 'green'; // Paint green
+        } else {
+          cell.style.color = 'red'; // Paint red
+        }
+      });
+    }
+
+    // Function to render the Ad Spend and DataNinja Pixel Conversion Value Graph
+    function renderAdSpendConversionChart(data) {
+      const ctx = document.getElementById('adSpendConversionChart').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.labels, // Array of time labels (e.g. dates)
+          datasets: [
+            {
+              label: 'Ad Spend',
+              data: data.adSpend,
+              borderColor: '#FF5722', // Color of Ad Spend line
+              borderWidth: 2,
+              fill: false
+            },
+            {
+              label: 'DataNinja Pixel Conversion Value',
+              data: data.conversionValue,
+              borderColor: '#4CAF50', // Color of Conversion Value line
+              borderWidth: 2,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Add event listener to table rows for rendering chart based on selection
+    document.querySelectorAll('.campaign-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const adSpend = parseFloat(row.cells[1].textContent.replace('$', '').replace(',', '')); // Ad Spend in the second column
+        const conversionValue = parseFloat(row.cells[4].textContent.replace('$', '').replace(',', '')); // Conversion Value in the fifth column
+        
+        // Placeholder values for demonstration
+        const data = {
+          labels: ['Week 1', 'Week 2', 'Week 3'], // Example time labels
+          adSpend: [adSpend, adSpend * 1.1, adSpend * 1.2], // Example: Ad Spend over time
+          conversionValue: [conversionValue, conversionValue * 1.05, conversionValue * 1.1] // Example: Conversion Value over time
+        };
+
+        renderAdSpendConversionChart(data); // Call the function with data
+      });
+    });
+
+    // Trigger change to ensure default visibility on load
+    document.getElementById('channelCampaignSelect').dispatchEvent(new Event('change'));
+  </script>
+
+</body></html>

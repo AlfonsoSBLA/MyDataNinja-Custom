@@ -1,0 +1,472 @@
+<!DOCTYPE html><html><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Data Ninja - Marketing Investment Setup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #FAFAFA;
+      color: #212121;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 250px;
+      background-color: black; /* Change sidebar background to black */
+      color: white; /* Keep text color white for contrast */
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 30px;
+    }
+    .logo img {
+      margin-right: 10px;
+    }
+    .menu-section {
+      margin-bottom: 30px;
+    }
+    .menu-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      color: #B3B3B3; /* Secondary Text */
+    }
+    .menu-items {
+      list-style-type: none;
+      padding: 0;
+    }
+    .menu-items li {
+      margin-bottom: 10px;
+    }
+    .menu-items a {
+      color: white !important; /* Ensure menu item text is white */
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .menu-section.getting-started .menu-items a {
+      background-color: #FFC107; /* Highlight color */
+      color: #212121 !important; /* Text color contrasting the background */
+      font-weight: 600;
+    }
+    .menu-section.getting-started .menu-items a:hover {
+      background-color: #FFA000; /* Darker highlight on hover */
+    }
+    .menu-section.getting-started i {
+      color: #212121; /* Icon color contrasting the background */
+    }
+    .menu-items a:hover {
+      background-color: #303F9F; /* Change hover color if needed */
+    }
+    .menu-items i {
+      margin-right: 10px;
+      font-family: 'Material Icons';
+      color: white; /* Ensure icon color is white */
+    }
+    .container {
+      display: block;
+      margin-left: 270px;
+      padding: 20px;
+    }
+    .main-content {
+      padding: 30px 20px;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+    .header {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #3F51B5;
+    }
+    .banner {
+      background-color: #2196F3; /* Blue Banner */
+      color: white;
+      padding: 15px 20px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      position: relative;
+    }
+    .banner .text-content {
+      max-width: 90%;
+    }
+    .banner .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 20px;
+    }
+    .widget-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .widget {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    .widget:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .user-section {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #5C6BC0;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .user-photo {
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .user-name {
+      font-size: 16px;
+      color: #FFFFFF;
+      font-weight: 500;
+    }
+    .user-settings-button {
+      width: 100%;
+      background-color: #FFC107; /* Secondary Color */
+      color: #212121;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .user-settings-button:hover {
+      background-color: #FFA000;
+    }
+    .user-settings-button::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 0.5s, opacity 1s;
+    }
+    .user-settings-button:active::after {
+      transform: scale(4);
+      opacity: 1;
+      transition: 0s;
+    }
+    .connect-channels-box {
+      background-color: #E3F2FD;
+      border: 2px solid #3F51B5;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+    .connect-channels-box h2 {
+      margin-top: 0;
+      color: #3F51B5;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .channels-description {
+      font-size: 14px;
+      color: #555555;
+      margin-bottom: 20px;
+    }
+    .channel-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .channel-card {
+      background-color: #FFFFFF;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .channel-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .channel-card img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 15px;
+    }
+    .channel-card span {
+      display: block;
+      font-size: 16px;
+      font-weight: 500;
+      color: #3F51B5;
+      margin-bottom: 10px;
+    }
+    .connect-button {
+      background-color: #3F51B5;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    .connect-button:hover {
+      background-color: #303F9F;
+    }
+    /* Connected Channels Table Styles */
+    .connected-channels-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .table-header, .table-row {
+      display: flex;
+      padding: 15px 20px;
+      align-items: center;
+    }
+    .table-header {
+      background-color: #3F51B5;
+      color: white;
+      font-weight: 600;
+    }
+    .table-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .table-cell img {
+      border-radius: 4px;
+    }
+    .status {
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+    }
+    /* Status Colors */
+    .status.success {
+      background-color: #C8E6C9;
+      color: #2E7D32;
+    }
+    .status.pending {
+      background-color: #FFF9C4;
+      color: #F9A825;
+    }
+    .status.error {
+      background-color: #FFCDD2;
+      color: #C62828;
+    }
+    /* Row Styling */
+    .table-row:nth-child(even) {
+      background-color: #f5f5f5;
+    }
+    .table-row:hover {
+      background-color: #e0e0e0;
+      cursor: pointer;
+    }
+    .edit-button {
+      background-color: #FFC107; /* Secondary Color */
+      color: #212121;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+    .edit-button:hover {
+      background-color: #FFA000;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/images/Dataninja.png" alt="My Data Ninja Logo" width="40" height="40">
+      <span>My Data Ninja</span>
+    </div>
+
+    <div class="menu-section getting-started">
+      <ul class="menu-items">
+        <li>
+          <a href="https://mydataninja.app/getting-started">
+            <i class="material-icons">emoji_objects</i> Getting Started
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-title">KPIs</div>
+      <ul class="menu-items">
+        <li><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+        <li><a href="Acquisition.html"><i class="material-icons">show_chart</i> Acquisition</a></li>
+        <li><a href="Retention.html"><i class="material-icons">people</i> Retention
+  </a></li>
+        <li><a href="https://mydataninja.app/reporting"><i class="material-icons">description</i> Reporting</a></li>
+      </ul>
+    </div>
+    <div class="menu-section">
+      <div class="menu-title">Setup</div>
+      <ul class="menu-items">
+        <li><a href="Marketing Investment Setup.html"><i class="material-icons">campaign</i> Marketing Investment</a></li>
+        <li><a href="Data Ninja Ecommerce.html"><i class="material-icons">attach_money</i> Ecommerce</a></li>
+        <li><a href="https://mydataninja.app/setup/costs"><i class="material-icons">receipt</i> Costs</a></li>
+        <li><a href="https://mydataninja.app/setup/conversions"><i class="material-icons">swap_horiz</i> Conversions</a></li>
+      </ul>
+    </div>
+    <div class="menu-section user-section">
+      <div class="user-info">
+        <img src="/images/Alfonso Foto 4040.jpg" alt="A professional headshot photo of a data analysis expert." class="user-photo" width="40" height="40" data-image_id="1">
+        <span class="user-name">Alfonso's Store</span>
+      </div>
+      <button class="user-settings-button">Settings</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="main-content">
+      <div class="header">
+        <h1>Marketing Investment Setup</h1>
+        <div id="banner" class="banner" style="display: none;">
+          <div class="text-content">
+            <strong>Set up your marketing channels to attribute your sales.</strong><br>
+            Connect your Facebook and Google automatically or your custom channels (Blog, Website, Affiliate campaigns) manually.
+          </div>
+          <button class="close-btn" id="close-banner">×</button>
+        </div>
+      </div>
+      <div class="connect-channels-box">
+        <h2>Connect your Marketing Channels</h2>
+        <p class="channels-description">
+          Set up your marketing channels to attribute your sales. Connect your Facebook and Google automatically or your custom channels (Blog, Website, Affiliate campaigns) manually.
+        </p>
+        <div class="channel-selector">
+          <div class="channel-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo" width="50" height="50">
+            <span>Facebook</span>
+            <button class="connect-button" onclick="window.parent.location.href='Connect to Facebook.html'">Connect</button>
+          </div>
+          <div class="channel-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Logo" width="50" height="50">
+            <span>Google</span>
+            <button class="connect-button" onclick="window.parent.location.href='Connect to Google.html'">Connect</button>
+          </div>
+          <div class="channel-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Generic_channel_icon.svg" alt="Custom Channel Logo" width="50" height="50">
+            <span>Custom Channel</span>
+            <button class="connect-button" onclick="window.location.href='https://mydataninja.app/connect/custom'">Connect</button>
+          </div>
+        </div>
+      </div>
+
+      <h2>Connected Channels</h2>
+      <div class="connected-channels-table">
+        <div class="table-header">
+          <div class="table-cell">Type</div>
+          <div class="table-cell">Account</div>
+          <div class="table-cell">Status</div>
+          <div class="table-cell">Actions</div>
+        </div>
+        <div class="table-row">
+          <div class="table-cell">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo" width="30" height="30">
+          </div>
+          <div class="table-cell">Facebook Ads Account</div>
+          <div class="table-cell"><span class="status success">Success</span></div>
+          <div class="table-cell">
+            <button class="edit-button" onclick="editChannel('facebook')">Edit</button>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="table-cell">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Logo" width="30" height="30">
+          </div>
+          <div class="table-cell">Google Ads Account</div>
+          <div class="table-cell"><span class="status pending">Pending</span></div>
+          <div class="table-cell">
+            <button class="edit-button" onclick="editChannel('google')">Edit</button>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="table-cell">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Generic_channel_icon.svg" alt="Custom Channel Logo" width="30" height="30">
+          </div>
+          <div class="table-cell">Affiliate Campaign</div>
+          <div class="table-cell"><span class="status error">Error</span></div>
+          <div class="table-cell">
+            <button class="edit-button" onclick="editChannel('custom')">Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const banner = document.getElementById('banner');
+      const closeBtn = document.getElementById('close-banner');
+      
+      if (!localStorage.getItem('bannerClosed')) {
+        banner.style.display = 'flex';
+      }
+
+      closeBtn.addEventListener('click', function() {
+        banner.style.display = 'none';
+        localStorage.setItem('bannerClosed', 'true');
+      });
+    });
+
+    function editChannel(channelType) {
+      // Implement the edit functionality here
+      window.location.href = `https://mydataninja.app/edit/${channelType}`;
+    }
+  </script>
+
+</body></html>

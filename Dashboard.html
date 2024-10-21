@@ -1,0 +1,397 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Data Ninja - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #FAFAFA;
+    color: #212121;
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: black; /* Change sidebar background to black */
+    color: white; /* Keep text color white for contrast */
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+  }
+  .logo img {
+    margin-right: 10px;
+  }
+  .menu-section {
+    margin-bottom: 30px;
+  }
+  .menu-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: #B3B3B3; /* Secondary Text */
+  }
+  .menu-items {
+    list-style-type: none;
+    padding: 0;
+  }
+  .menu-items li {
+    margin-bottom: 10px;
+  }
+  .menu-items a {
+    color: white !important; /* Ensure menu item text is white */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  .menu-section.getting-started .menu-items a {
+    background-color: #FFC107; /* Highlight color */
+    color: #212121 !important; /* Text color contrasting the background */
+    font-weight: 600;
+  }
+  .menu-section.getting-started .menu-items a:hover {
+    background-color: #FFA000; /* Darker highlight on hover */
+  }
+  .menu-section.getting-started i {
+    color: #212121; /* Icon color contrasting the background */
+  }
+  .menu-items a:hover {
+    background-color: #303F9F; /* Change hover color if needed */
+  }
+  .menu-items i {
+    margin-right: 10px;
+    font-family: 'Material Icons';
+    color: white; /* Ensure icon color is white */
+  }
+  .container {
+    display: block;
+    margin-left: 270px;
+    padding: 20px;
+  }
+  .main-content {
+    padding: 30px 20px;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #3F51B5;
+  }
+  .banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3F51B5; /* Primary Color */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .banner a {
+    color: #FFC107; /* Highlight Color */
+    text-decoration: underline;
+  }
+  .banner button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .widget-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .widget {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  .widget:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  .widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .widget-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #424242;
+  }
+  .widget-value {
+    font-size: 24px;
+    font-weight: 500;
+    color: #3F51B5;
+  }
+  .widget-chart {
+    height: 200px;
+  }
+  .user-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #5C6BC0;
+  }
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .user-photo {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  .user-name {
+    font-size: 16px;
+    color: #FFFFFF;
+    font-weight: 500;
+  }
+  .user-settings-button {
+    width: 100%;
+    background-color: #FFC107; /* Secondary Color */
+    color: #212121;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-settings-button:hover {
+    background-color: #FFA000;
+  }
+  .user-settings-button::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+  }
+  .user-settings-button:active::after {
+    transform: scale(4);
+    opacity: 1;
+    transition: 0s;
+  }
+</style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/images/Dataninja.png" alt="My Data Ninja Logo" width="40" height="40">
+      <span>My Data Ninja</span>
+    </div>
+
+    <div class="menu-section getting-started">
+      <ul class="menu-items">
+        <li>
+          <a href="Getting started.html">
+            <i class="material-icons">emoji_objects</i> Getting Started
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-title">KPIs</div>
+      <ul class="menu-items">
+        <li><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+        <li><a href="Acquisition.html"><i class="material-icons">show_chart</i> Acquisition</a></li>
+        <li><a href="Retention.html">
+    <i class="material-icons">people</i> Retention
+  </a></li>
+        <li><a href="https://mydataninja.app/reporting"><i class="material-icons">description</i> Reporting</a></li>
+      </ul>
+    </div>
+    <div class="menu-section">
+      <div class="menu-title">Setup</div>
+      <ul class="menu-items">
+        <li><a href="Marketing Investment Setup.html"><i class="material-icons">campaign</i> Marketing Investment</a></li>
+        <li><a href="Data Ninja Ecommerce.html"><i class="material-icons">attach_money</i> Ecommerce</a></li>
+        <li><a href="https://mydataninja.app/setup/costs"><i class="material-icons">receipt</i> Costs</a></li>
+        <li><a href="https://mydataninja.app/setup/conversions"><i class="material-icons">swap_horiz</i> Conversions</a></li>
+      </ul>
+    </div>
+    <div class="menu-section user-section">
+      <div class="user-info">
+        <img src="/images/Alfonso Foto 4040.jpg" alt="A professional headshot photo of a data analysis expert." class="user-photo" width="40" height="40" data-image_id="1">
+        <span class="user-name">Alfonso's Store</span>
+      </div>
+      <button class="user-settings-button">Settings</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="main-content">
+      <div class="header">
+        <h1>Dashboard</h1>
+        <div class="date-selector">
+          <label for="dateRange">Date Range:</label>
+          <select id="dateRange">
+            <option value="7">Last 7 Days</option>
+            <option value="14">Last 14 Days</option>
+            <option value="30">Last Month</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="customDatePicker" class="custom-date-picker">
+            <input type="date" id="startDate" aria-label="Start Date">
+            <span>to</span>
+            <input type="date" id="endDate" aria-label="End Date">
+          </div>
+        </div>
+      </div>
+
+      <div id="getting-started-banner" class="banner">
+        <span>Welcome! Get started with <a href="Getting Started.html">Getting Started</a></span>
+        <button id="close-banner" aria-label="Close Banner">×</button>
+      </div>
+
+      <div class="widget-container">
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-title">Total Revenue</div>
+          </div>
+          <div class="widget-value">$24,500</div>
+          <div class="widget-chart">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-title">ROAS</div>
+          </div>
+          <div class="widget-value">3.2x</div>
+          <div class="widget-chart">
+            <canvas id="roasChart"></canvas>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-title">Conversion Rate</div>
+          </div>
+          <div class="widget-value">2.8%</div>
+          <div class="widget-chart">
+            <canvas id="conversionChart"></canvas>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-title">Average Order Value</div>
+          </div>
+          <div class="widget-value">$85</div>
+          <div class="widget-chart">
+            <canvas id="aovChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chartConfig = {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Value',
+          data: [12, 19, 3, 5, 2, 3, 7],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    };
+
+    const charts = {
+      revenue: new Chart(document.getElementById('revenueChart'), chartConfig),
+      roas: new Chart(document.getElementById('roasChart'), chartConfig),
+      conversion: new Chart(document.getElementById('conversionChart'), chartConfig),
+      aov: new Chart(document.getElementById('aovChart'), chartConfig),
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const banner = document.getElementById('getting-started-banner');
+      const closeButton = document.getElementById('close-banner');
+
+      if (localStorage.getItem('bannerClosed')) {
+        banner.style.display = 'none';
+      }
+
+      closeButton.addEventListener('click', () => {
+        banner.style.display = 'none';
+        localStorage.setItem('bannerClosed', 'true');
+      });
+    });
+
+    document.getElementById('dateRange').addEventListener('change', function() {
+      const selectedRange = this.value;
+      // Update data for all charts based on selected date range
+      updateCharts(selectedRange);
+      const customDatePicker = document.getElementById('customDatePicker');
+      if (selectedRange === 'custom') {
+        customDatePicker.style.display = 'flex';
+      } else {
+        customDatePicker.style.display = 'none';
+      }
+    });
+
+    function updateCharts(range) {
+      Object.values(charts).forEach(chart => {
+        chart.data = fetchDataForRange(range);
+        chart.update();
+      });
+    }
+
+    function fetchDataForRange(range) {
+      // Replace with actual data fetching logic
+      return {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Value',
+          data: [/* new data based on range */],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      };
+    }
+  </script>
+</body></html>

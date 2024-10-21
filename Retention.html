@@ -1,0 +1,949 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Data Ninja - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #FAFAFA;
+    color: #212121;
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: black; /* Change sidebar background to black */
+    color: white; /* Keep text color white for contrast */
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 30px;
+  }
+  .logo img {
+    margin-right: 10px;
+  }
+  .menu-section {
+    margin-bottom: 30px;
+  }
+  .menu-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: #B3B3B3; /* Secondary Text */
+  }
+  .menu-items {
+    list-style-type: none;
+    padding: 0;
+  }
+  .menu-items li {
+    margin-bottom: 10px;
+  }
+  .menu-items a {
+    color: white !important; /* Ensure menu item text is white */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  .menu-section.getting-started .menu-items a {
+    background-color: #FFC107; /* Highlight color */
+    color: #212121 !important; /* Text color contrasting the background */
+    font-weight: 600;
+  }
+  .menu-section.getting-started .menu-items a:hover {
+    background-color: #FFA000; /* Darker highlight on hover */
+  }
+  .menu-section.getting-started i {
+    color: #212121; /* Icon color contrasting the background */
+  }
+  .menu-items a:hover {
+    background-color: #303F9F; /* Change hover color if needed */
+  }
+  .menu-items i {
+    margin-right: 10px;
+    font-family: 'Material Icons';
+    color: white; /* Ensure icon color is white */
+  }
+  .container {
+    display: block;
+    margin-left: 270px;
+    padding: 20px;
+  }
+  .main-content {
+    padding: 30px 20px;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #3F51B5;
+  }
+  .banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3F51B5; /* Primary Color */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .banner a {
+    color: #FFC107; /* Highlight Color */
+    text-decoration: underline;
+  }
+  .banner button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .tabs {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  .tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #E0E0E0;
+    border: none;
+    outline: none;
+    transition: background-color 0.3s;
+    font-weight: 500;
+  }
+  .tab-button.active {
+    background-color: #3F51B5;
+    color: white;
+  }
+  .tab-button:not(:last-child) {
+    margin-right: 5px;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  .crm-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .crm-table th, .crm-table td {
+    padding: 12px 15px;
+    border: 1px solid #E0E0E0;
+    text-align: left;
+  }
+  .crm-table th {
+    background-color: #f5f5f5;
+    color: #3F51B5;
+  }
+  .crm-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  .metrics-row {
+    display: flex;
+    flex-wrap: nowrap; /* Prevents the cards from wrapping to the next line */
+    gap: 10px; /* Reduced from 20px to decrease space between cards */
+    margin-bottom: 20px;
+  }
+  .metric-card {
+    background-color: white;
+    padding: 15px; /* Reduced from 20px to make the cards smaller */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Allows all cards to have equal width */
+    min-width: 200px; /* Reduced from 250px to make cards narrower */
+    text-align: center;
+  }
+  .metric-card h3 {
+    margin-bottom: 8px; /* Adjusted for smaller padding */
+    color: #3F51B5;
+    font-size: 20px; /* Reduced from default for better fit */
+  }
+  .metric-card p {
+    font-size: 20px; /* Reduced from 24px to maintain balance */
+    font-weight: 700;
+    color: #212121;
+  }
+  @media (max-width: 1024px) {
+    .metrics-row {
+      gap: 8px; /* Further reduce gap on slightly smaller screens */
+    }
+    .metric-card {
+      min-width: 180px; /* Adjust min-width for medium screens */
+      padding: 12px; /* Further reduced padding */
+    }
+    .metric-card h3 {
+      font-size: 18px; /* Adjust font size for medium screens */
+    }
+    .metric-card p {
+      font-size: 18px; /* Adjust font size for medium screens */
+    }
+  }
+  @media (max-width: 768px) {
+    .metrics-row {
+      flex-wrap: wrap; /* Allows wrapping on smaller screens */
+      gap: 10px; /* Maintain smaller gap */
+    }
+    .metric-card {
+      min-width: 100%; /* Full width on small screens */
+      padding: 10px; /* Minimal padding */
+    }
+    .metric-card h3 {
+      font-size: 16px; /* Smaller font size */
+    }
+    .metric-card p {
+      font-size: 16px; /* Smaller font size */
+    }
+  }
+  .revenue-cohort {
+    margin-top: 40px; /* Space it from above content */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .revenue-cohort h3 {
+    margin-bottom: 20px;
+    color: #3F51B5;
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .cohort-filters {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 20px;
+  }
+
+  .cohort-filter label {
+    margin-right: 8px;
+    font-weight: 500;
+    color: #212121;
+  }
+
+  .cohort-filter select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  .cohort-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .cohort-table th, .cohort-table td {
+    padding: 12px 15px;
+    border: 1px solid #E0E0E0;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .cohort-table th {
+    background-color: #3F51B5;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .cohort-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  .cohort-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .revenue {
+    color: #4CAF50;
+    font-weight: bold;
+  }
+
+  .orders {
+    color: #FF9800;
+    font-weight: bold;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .cohort-filters {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cohort-table th, .cohort-table td {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+  }
+
+  .user-section {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #5C6BC0;
+  }
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .user-photo {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  .user-name {
+    font-size: 16px;
+    color: #FFFFFF;
+    font-weight: 500;
+  }
+  .user-settings-button {
+    width: 100%;
+    background-color: #FFC107; /* Secondary Color */
+    color: #212121;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .user-settings-button:hover {
+    background-color: #FFA000;
+  }
+  .user-settings-button::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+  }
+  .user-settings-button:active::after {
+    transform: scale(4);
+    opacity: 1;
+    transition: 0s;
+  }
+</style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/images/Dataninja.png" alt="My Data Ninja Logo" width="40" height="40">
+      <span>My Data Ninja</span>
+    </div>
+
+    <div class="menu-section getting-started">
+      <ul class="menu-items">
+        <li>
+          <a href="Getting Started.html">
+            <i class="material-icons">emoji_objects</i> Getting Started
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-title">KPIs</div>
+      <ul class="menu-items">
+        <li><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+        <li><a href="Acquisition.html"><i class="material-icons">show_chart</i> Acquisition</a></li>
+        <li><a href="Retention.html" class="active"><i class="material-icons">people</i> Retention</a></li>
+        <li><a href="#"><i class="material-icons">description</i> Reporting</a></li>
+      </ul>
+    </div>
+    <div class="menu-section">
+      <div class="menu-title">Setup</div>
+      <ul class="menu-items">
+        <li><a href="Marketing Investment Setup.html"><i class="material-icons">campaign</i> Marketing Investment</a></li>
+        <li><a href="Data Ninja Ecommerce.html"><i class="material-icons">attach_money</i> Ecommerce</a></li>
+        <li><a href="#"><i class="material-icons">receipt</i> Costs</a></li>
+        <li><a href="#"><i class="material-icons">swap_horiz</i> Conversions</a></li>
+      </ul>
+    </div>
+    <div class="menu-section user-section">
+      <div class="user-info">
+        <img src="/images/Alfonso Foto 4040.jpg" alt="A professional headshot photo of a data analysis expert." class="user-photo" width="40" height="40" data-image_id="1">
+        <span class="user-name">Alfonso's Store</span>
+      </div>
+      <button class="user-settings-button">Settings</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="main-content">
+      <div class="header">
+        <h1>Retention</h1>
+        <div class="date-selector">
+          <label for="dateRange">Date Range:</label>
+          <select id="dateRange">
+            <option value="7">Last 7 Days</option>
+            <option value="14">Last 14 Days</option>
+            <option value="30">Last Month</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="customDatePicker" class="custom-date-picker" style="display: none;">
+            <input type="date" id="startDate" aria-label="Start Date">
+            <span>to</span>
+            <input type="date" id="endDate" aria-label="End Date">
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="crm">CRM</button>
+        <button class="tab-button" data-tab="charts">Charts</button>
+      </div>
+
+      <div class="tab-content active" id="crm">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Customer Name</th>
+              <th>Registration Date</th>
+              <th>First Order Date</th>
+              <th>Average Order Value</th>
+              <th>Number of Orders</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>John Doe</td>
+              <td>2023-01-15</td>
+              <td>2023-02-10</td>
+              <td>$85</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <td>Jane Smith</td>
+              <td>2023-02-20</td>
+              <td>2023-03-15</td>
+              <td>$120</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>Michael Johnson</td>
+              <td>2023-03-05</td>
+              <td>2023-03-25</td>
+              <td>$95</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>Emily Davis</td>
+              <td>2023-04-10</td>
+              <td>2023-04-20</td>
+              <td>$110</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>William Brown</td>
+              <td>2023-05-18</td>
+              <td>2023-06-02</td>
+              <td>$130</td>
+              <td>9</td>
+            </tr>
+            <tr>
+              <td>Olivia Wilson</td>
+              <td>2023-06-22</td>
+              <td>2023-07-01</td>
+              <td>$105</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>James Taylor</td>
+              <td>2023-07-30</td>
+              <td>2023-08-10</td>
+              <td>$115</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>Ava Martinez</td>
+              <td>2023-08-14</td>
+              <td>2023-08-28</td>
+              <td>$90</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <td>Benjamin Anderson</td>
+              <td>2023-09-03</td>
+              <td>2023-09-20</td>
+              <td>$125</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>Isabella Thomas</td>
+              <td>2023-10-11</td>
+              <td>2023-10-25</td>
+              <td>$100</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>Noah Jackson</td>
+              <td>2023-11-07</td>
+              <td>2023-11-22</td>
+              <td>$140</td>
+              <td>10</td>
+            </tr>
+            <tr>
+              <td>Sophia White</td>
+              <td>2023-12-01</td>
+              <td>2023-12-15</td>
+              <td>$115</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>Liam Harris</td>
+              <td>2024-01-09</td>
+              <td>2024-01-24</td>
+              <td>$105</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>Mia Martin</td>
+              <td>2024-02-16</td>
+              <td>2024-03-01</td>
+              <td>$125</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>Lucas Lee</td>
+              <td>2024-03-21</td>
+              <td>2024-04-05</td>
+              <td>$95</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <td>Charlotte Perez</td>
+              <td>2024-04-12</td>
+              <td>2024-04-27</td>
+              <td>$130</td>
+              <td>9</td>
+            </tr>
+            <tr>
+              <td>Alexander Thompson</td>
+              <td>2024-05-19</td>
+              <td>2024-06-03</td>
+              <td>$110</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>Amelia Garcia</td>
+              <td>2024-06-25</td>
+              <td>2024-07-10</td>
+              <td>$100</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>Ethan Martinez</td>
+              <td>2024-07-14</td>
+              <td>2024-07-29</td>
+              <td>$115</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>Harper Robinson</td>
+              <td>2024-08-08</td>
+              <td>2024-08-23</td>
+              <td>$140</td>
+              <td>10</td>
+            </tr>
+            <tr>
+              <td>Daniel Clark</td>
+              <td>2024-09-02</td>
+              <td>2024-09-17</td>
+              <td>$105</td>
+              <td>6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-content" id="charts">
+        <div class="metrics-row">
+          <div class="metric-card">
+            <h3>Current LTV</h3>
+            <p id="currentLTV">$120,000</p>
+          </div>
+          <div class="metric-card">
+            <h3>Average Order Value</h3>
+            <p id="currentAOV">$95</p>
+          </div>
+          <div class="metric-card">
+            <h3>Number of Orders</h3>
+            <p id="currentOrders">750</p>
+          </div>
+        </div>
+        
+        <!-- Enhanced Revenue Cohort Section -->
+        <div class="revenue-cohort">
+          <h3>Revenue Cohort</h3>
+          <div class="cohort-filters">
+            <div class="cohort-filter">
+              <label for="cohortPeriod">Period:</label>
+              <select id="cohortPeriod">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+              </select>
+            </div>
+            <div class="cohort-filter">
+              <label for="cohortMetric">Metric:</label>
+              <select id="cohortMetric">
+                <option value="revenue">Revenue</option>
+                <option value="orders">Number of Orders</option>
+              </select>
+            </div>
+          </div>
+          <canvas id="cohortChart" width="400" height="200"></canvas>
+          <table class="cohort-table">
+            <thead>
+              <tr>
+                <th>Cohort</th>
+                <th>Period 1</th>
+                <th>Period 2</th>
+                <th>Period 3</th>
+                <th>Period 4</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Sample Cohort Data -->
+              <tr>
+                <td>January</td>
+                <td class="revenue">$1,000</td>
+                <td class="revenue">$1,100</td>
+                <td class="revenue">$1,050</td>
+                <td class="revenue">$1,150</td>
+              </tr>
+              <tr>
+                <td>February</td>
+                <td class="revenue">$1,200</td>
+                <td class="revenue">$1,300</td>
+                <td class="revenue">$1,250</td>
+                <td class="revenue">$1,350</td>
+              </tr>
+              <tr>
+                <td>March</td>
+                <td class="revenue">$900</td>
+                <td class="revenue">$980</td>
+                <td class="revenue">$950</td>
+                <td class="revenue">$990</td>
+              </tr>
+              <!-- Add more cohorts as needed -->
+              <tr>
+                <td>April</td>
+                <td class="revenue">$1,300</td>
+                <td class="revenue">$1,400</td>
+                <td class="revenue">$1,350</td>
+                <td class="revenue">$1,450</td>
+              </tr>
+              <tr>
+                <td>May</td>
+                <td class="revenue">$1,500</td>
+                <td class="revenue">$1,600</td>
+                <td class="revenue">$1,550</td>
+                <td class="revenue">$1,650</td>
+              </tr>
+              <tr>
+                <td>June</td>
+                <td class="revenue">$1,700</td>
+                <td class="revenue">$1,800</td>
+                <td class="revenue">$1,750</td>
+                <td class="revenue">$1,850</td>
+              </tr>
+              <tr>
+                <td>July</td>
+                <td class="revenue">$1,900</td>
+                <td class="revenue">$2,000</td>
+                <td class="revenue">$1,950</td>
+                <td class="revenue">$2,050</td>
+              </tr>
+              <tr>
+                <td>August</td>
+                <td class="revenue">$2,100</td>
+                <td class="revenue">$2,200</td>
+                <td class="revenue">$2,150</td>
+                <td class="revenue">$2,250</td>
+              </tr>
+              <tr>
+                <td>September</td>
+                <td class="revenue">$2,300</td>
+                <td class="revenue">$2,400</td>
+                <td class="revenue">$2,350</td>
+                <td class="revenue">$2,450</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Existing Tab Functionality
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tab = button.getAttribute('data-tab');
+
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(tab).classList.add('active');
+      });
+    });
+
+    // Function to update metrics based on date range
+    document.getElementById('dateRange').addEventListener('change', updateMetrics);
+   
+    function updateMetrics() {
+      const dateRange = document.getElementById('dateRange').value;
+      
+      // Placeholder logic for fetching and updating metrics
+      let ltv = '$120,000';
+      let aov = '$95';
+      let orders = '750';
+      
+      if(dateRange === '7') {
+        ltv = '$15,000';
+        aov = '$80';
+        orders = '150';
+      } else if(dateRange === '14') {
+        ltv = '$30,000';
+        aov = '$85';
+        orders = '300';
+      } else if(dateRange === '30') {
+        ltv = '$60,000';
+        aov = '$90';
+        orders = '600';
+      } else if(dateRange === 'custom') {
+        // Implement custom date range logic
+        ltv = '$120,000';
+        aov = '$95';
+        orders = '750';
+      }
+      
+      document.getElementById('currentLTV').textContent = ltv;
+      document.getElementById('currentAOV').textContent = aov;
+      document.getElementById('currentOrders').textContent = orders;
+      
+      // Update the cohort data based on the selected date range if necessary
+      // This would involve fetching new data and updating the chart and table
+    }
+
+    // Initialize metrics on page load
+    updateMetrics();
+
+    window.onload = () => {
+      const ctx = document.getElementById('cohortChart').getContext('2d');
+      let chartData = {
+        weekly: {
+          labels: ['January', 'February', 'March'],
+          datasets: [
+            { label: 'Week 1', data: [1000, 1200, 900], backgroundColor: '#3F51B5' },
+            { label: 'Week 2', data: [1100, 1300, 980], backgroundColor: '#FF5722' },
+            { label: 'Week 3', data: [1050, 1250, 950], backgroundColor: '#009688' },
+            { label: 'Week 4', data: [1150, 1350, 990], backgroundColor: '#FFC107' }
+          ]
+        },
+        monthly: {
+          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September'],
+          datasets: [
+            { label: 'Month 1', data: [4000, 4800, 3600, 4300, 4500, 4700, 4900, 5100, 5300], backgroundColor: '#3F51B5' },
+            { label: 'Month 2', data: [4200, 5000, 3800, 4400, 4600, 4800, 5000, 5200, 5400], backgroundColor: '#FF5722' },
+            { label: 'Month 3', data: [4100, 4900, 3700, 4300, 4500, 4700, 4900, 5100, 5300], backgroundColor: '#009688' },
+            { label: 'Month 4', data: [4300, 5100, 3900, 4400, 4600, 4800, 5000, 5200, 5400], backgroundColor: '#FFC107' },
+            { label: 'Month 5', data: [4400, 5200, 4000, 4500, 4700, 4900, 5100, 5300, 5500], backgroundColor: '#FF9800' },
+            { label: 'Month 6', data: [4500, 5300, 4100, 4600, 4800, 5000, 5200, 5400, 5600], backgroundColor: '#9C27B0' }
+          ]
+        },
+        quarterly: {
+          labels: ['January', 'February', 'March'],
+          datasets: [
+            { label: 'Quarter 1', data: [12000, 14400, 10800], backgroundColor: '#3F51B5' },
+            { label: 'Quarter 2', data: [12600, 15000, 11400], backgroundColor: '#FF5722' },
+            { label: 'Quarter 3', data: [12300, 14700, 11100], backgroundColor: '#009688' },
+            { label: 'Quarter 4', data: [12900, 15300, 11700], backgroundColor: '#FFC107' }
+          ]
+        },
+        orders: {
+          labels: ['January', 'February', 'March'],
+          datasets: [
+            { label: 'Week 1', data: [30, 32, 25], backgroundColor: '#3F51B5' },
+            { label: 'Week 2', data: [28, 33, 27], backgroundColor: '#FF5722' },
+            { label: 'Week 3', data: [35, 30, 26], backgroundColor: '#009688' },
+            { label: 'Week 4', data: [40, 37, 29], backgroundColor: '#FFC107' }
+          ]
+        }
+      };
+
+      let currentMetric = 'revenue'; // Default metric
+
+      // Initialize the chart with default period and metric
+      let initialPeriod = document.getElementById('cohortPeriod').value;
+      let initialMetric = document.getElementById('cohortMetric').value;
+      currentMetric = initialMetric;
+
+      let cohortChart = new Chart(ctx, {
+        type: 'bar',
+        data: chartData[initialPeriod],
+        options: {
+          indexAxis: 'y', // Make the bar chart horizontal
+          responsive: true,
+          scales: {
+            x: { 
+              stacked: true,
+              title: {
+                display: true,
+                text: initialMetric === 'revenue' ? 'Revenue ($)' : 'Number of Orders'
+              }
+            },
+            y: { 
+              stacked: true,
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Cohorts'
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            },
+            legend: {
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: initialMetric === 'revenue' ? 'Revenue Cohort Analysis' : 'Orders Cohort Analysis'
+            }
+          }
+        }
+      });
+
+      // Update chart and table based on filter changes
+      document.querySelectorAll('.cohort-filter').forEach(filter => {
+        filter.addEventListener('change', function() {
+          const period = document.getElementById('cohortPeriod').value;
+          const metric = document.getElementById('cohortMetric').value;
+          currentMetric = metric;
+
+          // Update chart data based on the selected period and metric
+          cohortChart.data = chartData[period];
+          cohortChart.options.scales.x.title.text = metric === 'revenue' ? 'Revenue ($)' : 'Number of Orders';
+          cohortChart.options.plugins.title.text = metric === 'revenue' ? 'Revenue Cohort Analysis' : 'Orders Cohort Analysis';
+          cohortChart.update();
+
+          // Update table data based on selected metric
+          updateCohortTable(period, metric);
+        });
+      });
+    };
+
+    // Function to update cohort table data
+    function updateCohortTable(period, metric) {
+      const tableBody = document.querySelector('.cohort-table tbody');
+      const cohortData = {
+        weekly: {
+          revenue: [
+            { cohort: 'January', period1: '$1,000', period2: '$1,100', period3: '$1,050', period4: '$1,150' },
+            { cohort: 'February', period1: '$1,200', period2: '$1,300', period3: '$1,250', period4: '$1,350' },
+            { cohort: 'March', period1: '$900', period2: '$980', period3: '$950', period4: '$990' }
+            // Add more cohorts as needed
+          ],
+          orders: [
+            { cohort: 'January', period1: '30', period2: '28', period3: '35', period4: '40' },
+            { cohort: 'February', period1: '32', period2: '33', period3: '30', period4: '37' },
+            { cohort: 'March', period1: '25', period2: '27', period3: '26', period4: '29' }
+            // Add more cohorts as needed
+          ]
+        },
+        monthly: {
+          revenue: [
+            { cohort: 'January', period1: '$4,000', period2: '$4,800', period3: '$4,600', period4: '$5,200' },
+            { cohort: 'February', period1: '$4,200', period2: '$5,000', period3: '$4,700', period4: '$5,400' },
+            { cohort: 'March', period1: '$3,600', period2: '$3,840', period3: '$3,900', period4: '$4,200' }
+            // Add more cohorts as needed
+          ],
+          orders: [
+            { cohort: 'January', period1: '90', period2: '96', period3: '105', period4: '120' },
+            { cohort: 'February', period1: '96', period2: '99', period3: '90', period4: '111' },
+            { cohort: 'March', period1: '75', period2: '81', period3: '78', period4: '87' }
+            // Add more cohorts as needed
+          ]
+        },
+        quarterly: {
+          revenue: [
+            { cohort: 'January', period1: '$12,000', period2: '$14,400', period3: '$13,050', period4: '$15,600' },
+            { cohort: 'February', period1: '$12,600', period2: '$15,000', period3: '$13,750', period4: '$16,200' },
+            { cohort: 'March', period1: '$10,800', period2: '$11,760', period3: '$11,700', period4: '$11,880' }
+            // Add more cohorts as needed
+          ],
+          orders: [
+            { cohort: 'January', period1: '90', period2: '96', period3: '105', period4: '120' },
+            { cohort: 'February', period1: '96', period2: '99', period3: '90', period4: '111' },
+            { cohort: 'March', period1: '75', period2: '81', period3: '78', period4: '87' }
+            // Add more cohorts as needed
+          ]
+        }
+      };
+
+      // Clear existing table rows
+      tableBody.innerHTML = '';
+     
+      // Add new rows based on selected metric
+      cohortData[period][metric].forEach(data => {
+        tableBody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${data.cohort}</td>
+            <td class="${metric}">${data.period1}</td>
+            <td class="${metric}">${data.period2}</td>
+            <td class="${metric}">${data.period3}</td>
+            <td class="${metric}">${data.period4}</td>
+          </tr>
+        `);
+      });
+    }
+  </script>
+
+</body></html>

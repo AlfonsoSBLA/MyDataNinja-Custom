@@ -1,0 +1,386 @@
+<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Data Ninja - Connect to Custom Ecommerce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #FAFAFA;
+            color: #212121;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: black; /* Change sidebar background to black */
+            color: white; /* Keep text color white for contrast */
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+        .logo img {
+            margin-right: 10px;
+        }
+        .menu-section {
+            margin-bottom: 30px;
+        }
+        .menu-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: #B3B3B3; /* Secondary Text */
+        }
+        .menu-items {
+            list-style-type: none;
+            padding: 0;
+        }
+        .menu-items li {
+            margin-bottom: 10px;
+        }
+        .menu-items a {
+            color: white !important; /* Ensure menu item text is white */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .menu-items a:hover {
+            background-color: #303F9F; /* Change hover color if needed */
+        }
+        .menu-items i {
+            margin-right: 10px;
+            font-family: 'Material Icons';
+            color: white; /* Ensure icon color is white */
+        }
+        .menu-section.getting-started .menu-items a {
+            background-color: #FFC107; /* Highlight color */
+            color: #212121 !important; /* Text color contrasting the background */
+            font-weight: 600;
+        }
+        .menu-section.getting-started .menu-items a:hover {
+            background-color: #FFA000; /* Darker highlight on hover */
+        }
+        .menu-section.getting-started i {
+            color: #212121; /* Icon color contrasting the background */
+        }
+        .menu-items a.active {
+            background-color: #303F9F;
+        }
+        .container {
+            display: block;
+            margin-left: 270px;
+            padding: 20px;
+        }
+        .main-content {
+            padding: 40px 30px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .main-content:hover {
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #424242;
+            margin-bottom: 20px;
+        }
+        .wizard {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .wizard-step {
+            background-color: #FFFFFF;
+            border: 2px solid #3F51B5;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 30%;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .wizard-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(63,81,181,0.2);
+        }
+        .wizard-step h3 {
+            font-size: 20px;
+            margin: 15px 0 10px 0;
+            color: #3F51B5;
+        }
+        .wizard-step p {
+            font-size: 14px;
+            color: #424242;
+        }
+        .tutorials-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .tutorial-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 32%;
+            transition: box-shadow 0.3s ease;
+        }
+        .tutorial-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .tutorial-card svg {
+            margin-bottom: 15px;
+        }
+        .tutorial-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #424242;
+        }
+        .tutorial-card p {
+            font-size: 14px;
+            color: #616161;
+            margin-bottom: 15px;
+        }
+        .tutorial-link {
+            text-decoration: none;
+            color: #3F51B5;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .tutorial-link:hover {
+            color: #303F9F;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin-left: 0;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+        }
+        @media (max-width: 900px) {
+            .wizard {
+                flex-direction: column;
+                align-items: center;
+            }
+            .wizard-step {
+                width: 80%;
+                margin-bottom: 20px;
+            }
+            .tutorials-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+            .tutorial-card {
+                width: 80%;
+            }
+        }
+        .user-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #5C6BC0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .user-photo {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user-name {
+            font-size: 16px;
+            color: #FFFFFF;
+            font-weight: 500;
+        }
+        .user-settings-button {
+            width: 100%;
+            background-color: #FFC107; /* Secondary Color */
+            color: #212121;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .user-settings-button:hover {
+            background-color: #FFA000;
+        }
+        .user-settings-button::after {
+            content: "";
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.5s, opacity 1s;
+        }
+        .user-settings-button:active::after {
+            transform: scale(4);
+            opacity: 1;
+            transition: 0s;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/images/Dataninja.png" alt="My Data Ninja Logo" width="40" height="40">
+            <span>My Data Ninja</span>
+        </div>
+
+        <div class="menu-section getting-started">
+            <ul class="menu-items">
+                <li>
+                    <a href="Getting Started.html">
+                        <i class="material-icons">emoji_objects</i> Getting Started
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-title">KPIs</div>
+            <ul class="menu-items">
+                <li><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+                <li><a href="Acquisition.html"><i class="material-icons">show_chart</i> Acquisition</a></li>
+                <li><a href="Retention.html">
+    <i class="material-icons">people</i> Retention
+  </a></li>
+                <li><a href="https://mydataninja.app/reporting"><i class="material-icons">description</i> Reporting</a></li>
+            </ul>
+        </div>
+        <div class="menu-section">
+            <div class="menu-title">Setup</div>
+            <ul class="menu-items">
+                <li><a href="Marketing Investment Setup.html"><i class="material-icons">campaign</i> Marketing Investment</a></li>
+                <li><a href="Data Ninja Ecommerce.html"><i class="material-icons">attach_money</i> Ecommerce</a></li>
+                <li><a href="https://mydataninja.app/setup/costs"><i class="material-icons">receipt</i> Costs</a></li>
+                <li><a href="https://mydataninja.app/setup/conversions"><i class="material-icons">swap_horiz</i> Conversions</a></li>
+            </ul>
+        </div>
+        <div class="menu-section user-section">
+            <div class="user-info">
+                <img src="/images/Alfonso Foto 4040.jpg" alt="A professional headshot photo of a data analysis expert." class="user-photo" width="40" height="40" data-image_id="1">
+                <span class="user-name">Alfonso's Store</span>
+            </div>
+            <button class="user-settings-button">Settings</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1>Connect to Custom Ecommerce</h1>
+            </div>
+
+            <div class="wizard">
+                <div class="wizard-step" id="step-1">
+                    <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="30" cy="30" r="28" stroke="#3F51B5" stroke-width="2" fill="none"></circle>
+                        <text x="30" y="35" text-anchor="middle" font-size="24" fill="#3F51B5">1</text>
+                    </svg>
+                    <h3>Set Up Your Custom Pixel</h3>
+                    <p>Insert it with Google Tag Manager to start tracking.</p>
+                </div>
+                <div class="wizard-step" id="step-2">
+                    <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="56" height="56" stroke="#3F51B5" stroke-width="2" fill="none"></rect>
+                        <text x="30" y="35" text-anchor="middle" font-size="24" fill="#3F51B5">2</text>
+                    </svg>
+                    <h3>Set Up Your Postbacks</h3>
+                    <p>Track sales effectively across your platforms.</p>
+                </div>
+                <div class="wizard-step" id="step-3">
+                    <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="30,2 58,58 2,58" stroke="#3F51B5" stroke-width="2" fill="none"></polygon>
+                        <text x="30" y="35" text-anchor="middle" font-size="24" fill="#3F51B5">3</text>
+                    </svg>
+                    <h3>Set Up Conversions</h3>
+                    <p>Integrate with your Marketing Channels seamlessly.</p>
+                </div>
+            </div>
+
+            <div class="tutorials-grid">
+                <div class="tutorial-card">
+                    <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 10 H30 V30 H10 Z" fill="#3F51B5"></path>
+                    </svg>
+                    <h4>Tutorial 1</h4>
+                    <p>Learn how to set up your custom pixel effectively.</p>
+                    <a href="https://mydataninja.app/tutorials/custom-pixel-setup" class="tutorial-link">Read More</a>
+                </div>
+                <div class="tutorial-card">
+                    <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" stroke="#3F51B5" stroke-width="2" fill="none"></circle>
+                    </svg>
+                    <h4>Tutorial 2</h4>
+                    <p>Understand how to configure postbacks for optimal tracking.</p>
+                    <a href="https://mydataninja.app/tutorials/postbacks-configuration" class="tutorial-link">Read More</a>
+                </div>
+                <div class="tutorial-card">
+                    <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="20,2 38,38 2,38" fill="#3F51B5"></polygon>
+                    </svg>
+                    <h4>Tutorial 3</h4>
+                    <p>Step-by-step guide to setting up conversions with marketing channels.</p>
+                    <a href="https://mydataninja.app/tutorials/conversions-setup" class="tutorial-link">Read More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+
+            step1.addEventListener('click', () => {
+                window.location.href = 'https://mydataninja.app/tutorials/custom-pixel-setup';
+            });
+
+            step2.addEventListener('click', () => {
+                window.location.href = 'https://mydataninja.app/tutorials/postbacks-configuration';
+            });
+
+            step3.addEventListener('click', () => {
+                window.location.href = 'https://mydataninja.app/tutorials/conversions-setup';
+            });
+        });
+    </script>
+
+</body></html>
